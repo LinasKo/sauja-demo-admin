@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { env } from "$env/dynamic/public";
   import { st_showDev } from "$lib/stores";
   import type { Convo, Message } from "$lib/types";
@@ -15,14 +16,38 @@
     const data = await resp.json();
     return data;
   }
+
+  function groupConversationsByDay(convos: Convo[]): Record<string, Convo[]> {
+    return convos.reduce<Record<string, Convo[]>>((acc, convo) => {
+      const day = convo.timeCreated.split("T")[0];
+      if (!acc[day]) {
+        acc[day] = [];
+      }
+      acc[day].push(convo);
+      return acc;
+    }, {});
+  }
+
+  let convoGroups: Record<string, Convo[]>;
+  $: convoGroups = {};
+  onMount(async () => {
+    const convos = await getConversations();
+    convoGroups = groupConversationsByDay(convos);
+  });
+
+  function groupSortOrder(convoGroups: Record<string, Convo[]>) {
+    return Object.keys(convoGroups).sort((a, b) => {
+      return new Date(b).getTime() - new Date(a).getTime();
+    });
+  }
 </script>
 
 <div class="p-10">
   <h1 class="text-lg font-bold">Recorded conversations:</h1>
   <div class="">
-    {#await getConversations()}
+    {#if Object.keys(convoGroups).length == 0}
       <p>Loading...</p>
-    {:then convos}
+    {:else}
       <!-- Inputs -->
       <div class="flex items-center gap-2 mt-2">
         <input
@@ -37,13 +62,14 @@
 
       <!-- Conversations -->
       <ul class="flex flex-col gap-1 mt-4">
-        {#each convos as convo}
-          <ConvoElem {convo} />
+        {#each groupSortOrder(convoGroups) as dayStr}
+          <div class="text-sm font-bold">{dayStr}</div>
+          {#each convoGroups[dayStr] as convo}
+            <ConvoElem {convo} />
+          {/each}
         {/each}
       </ul>
-    {:catch error}
-      <p>{error.message}</p>
-    {/await}
+    {/if}
   </div>
 </div>
 
