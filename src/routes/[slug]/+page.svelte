@@ -1,5 +1,6 @@
 <script lang="ts">
   import { env } from "$env/dynamic/public";
+  import type { Message } from "$lib/types";
   import type { PageData } from "./$types";
   import MsgElem from "./MsgElem.svelte";
 

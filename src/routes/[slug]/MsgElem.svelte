@@ -19,7 +19,7 @@
 
 <div class="flex flex-col justify-start items-start p-4">
   <!-- Author badge -->
-  <div class={`capitalize ${authorColor} rounded font-bold text-md p-1 mb-1`}>
+  <div class={`capitalize ${authorColor} rounded font-bold p-1 mb-1 text-lg`}>
     {msg.author}
   </div>
 
