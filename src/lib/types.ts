@@ -12,7 +12,7 @@ export enum UserType {
   UNKNOWN = "unknown", // unknown (wtf?)
 }
 
-export type Convo = {
+export type Chat = {
   id: string;
   origin: string;
   promptId: string;
@@ -22,7 +22,7 @@ export type Convo = {
 
 export type Message = {
   id: string;
-  conversationId: string;
+  chatId: string;
   content: string;
   author: Author;
   timeCreated: string;

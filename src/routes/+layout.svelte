@@ -8,7 +8,7 @@
     class="p-2 bg-white rounded hover:bg-green-300 transitions font-bold"
     href="/"
   >
-    User Conversations
+    Conversations
   </a>
 </div>
 <slot />

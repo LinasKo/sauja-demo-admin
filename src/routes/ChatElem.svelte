@@ -1,8 +1,8 @@
 <script lang="ts">
   import { st_showDev } from "$lib/stores";
-  import { UserType, type Convo } from "$lib/types";
+  import { UserType, type Chat } from "$lib/types";
 
-  export let convo: Convo;
+  export let convo: Chat;
 
   let tagText = convo.origin;
   let tagColor = "bg-red-500";

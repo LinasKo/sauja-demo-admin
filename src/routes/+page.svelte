@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import { env } from "$env/dynamic/public";
   import { st_showDev } from "$lib/stores";
-  import type { Convo, Message } from "$lib/types";
-  import ConvoElem from "./ConvoElem.svelte";
+  import type { Chat } from "$lib/types";
+  import { onMount } from "svelte";
+  import ChatElem from "./ChatElem.svelte";
 
-  async function getConversations(): Promise<Convo[]> {
-    const endpoint = `${env.PUBLIC_BACKEND_URL}/admin/conversations`;
+  async function getChats(): Promise<Chat[]> {
+    const endpoint = `${env.PUBLIC_BACKEND_URL}/admin/chats`;
     const resp = await fetch(endpoint, {
       method: "GET",
       headers: {
@@ -17,8 +17,8 @@
     return data;
   }
 
-  function groupConversationsByDay(convos: Convo[]): Record<string, Convo[]> {
-    return convos.reduce<Record<string, Convo[]>>((acc, convo) => {
+  function groupChatsByDay(convos: Chat[]): Record<string, Chat[]> {
+    return convos.reduce<Record<string, Chat[]>>((acc, convo) => {
       const day = convo.timeCreated.split("T")[0];
       if (!acc[day]) {
         acc[day] = [];
@@ -28,14 +28,14 @@
     }, {});
   }
 
-  let convoGroups: Record<string, Convo[]>;
+  let convoGroups: Record<string, Chat[]>;
   $: convoGroups = {};
   onMount(async () => {
-    const convos = await getConversations();
-    convoGroups = groupConversationsByDay(convos);
+    const convos = await getChats();
+    convoGroups = groupChatsByDay(convos);
   });
 
-  function groupSortOrder(convoGroups: Record<string, Convo[]>) {
+  function groupSortOrder(convoGroups: Record<string, Chat[]>) {
     return Object.keys(convoGroups).sort((a, b) => {
       return new Date(b).getTime() - new Date(a).getTime();
     });
@@ -43,7 +43,7 @@
 </script>
 
 <div class="p-10">
-  <h1 class="text-lg font-bold">Recorded conversations:</h1>
+  <h1 class="text-lg font-bold">Recorded chats:</h1>
   <div class="">
     {#if Object.keys(convoGroups).length == 0}
       <p>Loading...</p>
@@ -60,12 +60,12 @@
         <label for="show-dev">Show dev</label>
       </div>
 
-      <!-- Conversations -->
+      <!-- Chats -->
       <ul class="flex flex-col gap-1 mt-4">
         {#each groupSortOrder(convoGroups) as dayStr}
           <div class="text-sm font-bold">{dayStr}</div>
           {#each convoGroups[dayStr] as convo}
-            <ConvoElem {convo} />
+            <ChatElem {convo} />
           {/each}
         {/each}
       </ul>

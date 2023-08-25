@@ -7,8 +7,8 @@
   export let data: PageData;
   const convoId = data.slug;
 
-  async function getMessages(conversationId: string): Promise<Message[]> {
-    const endpoint = `${env.PUBLIC_BACKEND_URL}/admin/messages/${conversationId}`;
+  async function getMessages(chatId: string): Promise<Message[]> {
+    const endpoint = `${env.PUBLIC_BACKEND_URL}/admin/messages/${chatId}`;
     const resp = await fetch(endpoint, {
       method: "GET",
       headers: {
