@@ -23,7 +23,6 @@
     {msg.author}
   </div>
 
-  <pre class="whitespace-break-spaces border-l-8 pl-2 rounded-b-2xl">
-    {msg.content}
-  </pre>
+  <pre
+    class="whitespace-break-spaces border-l-8 pl-6 pt-2 rounded-b-2xl">{msg.content}</pre>
 </div>

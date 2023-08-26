@@ -32,12 +32,11 @@
     <!-- Badge -->
     <span
       class={`inline-block px-2 py-1 mr-2 text-xs font-bold rounded-full "text-black" ${tagColor}`}
-    >
-      {tagText}
+      >{tagText}
     </span>
 
     <!-- Link -->
-    <a href={`/${convo.id}`}>
+    <a href={`/chats/${convo.id}`}>
       {convo.id}
     </a>
   </li>
