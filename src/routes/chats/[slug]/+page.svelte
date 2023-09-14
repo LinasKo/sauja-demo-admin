@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { env } from "$env/dynamic/public";
   import { ENDPOINT_ADMIN_CHAT } from "$lib/endpoints";
+  import { fetchGetJson } from "$lib/requests";
   import type { Message } from "$lib/types";
   import type { PageData } from "./$types";
   import MsgElem from "./MsgElem.svelte";
@@ -9,14 +9,7 @@
   const convoId = data.slug;
 
   async function getMessages(chatId: string): Promise<Message[]> {
-    const resp = await fetch(ENDPOINT_ADMIN_CHAT(chatId), {
-      method: "GET",
-      headers: {
-        "x-api-key": env.PUBLIC_DEV_KEY,
-      },
-    });
-    const data = await resp.json();
-    return data;
+    return await fetchGetJson(ENDPOINT_ADMIN_CHAT(chatId));
   }
 </script>
 

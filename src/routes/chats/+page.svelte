@@ -1,20 +1,13 @@
 <script lang="ts">
-  import { env } from "$env/dynamic/public";
+  import { ENDPOINT_ADMIN_CHATS } from "$lib/endpoints";
+  import { fetchGetJson } from "$lib/requests";
   import { st_showDev } from "$lib/stores";
   import type { Chat } from "$lib/types";
   import { onMount } from "svelte";
   import ChatElem from "../ChatElem.svelte";
-  import { ENDPOINT_ADMIN_CHATS } from "$lib/endpoints";
 
   async function getChats(): Promise<Chat[]> {
-    const resp = await fetch(ENDPOINT_ADMIN_CHATS, {
-      method: "GET",
-      headers: {
-        "x-api-key": env.PUBLIC_DEV_KEY,
-      },
-    });
-    const data = await resp.json();
-    return data;
+    return await fetchGetJson(ENDPOINT_ADMIN_CHATS);
   }
 
   function groupChatsByDay(convos: Chat[]): Record<string, Chat[]> {

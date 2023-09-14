@@ -4,8 +4,8 @@
 
 <!-- Header -->
 <div class="w-full p-4 bg-gray-200">
+  <a class="btn" href="/auth"> Authenticate </a>
   <a class="btn" href="/chats"> Conversations </a>
-
   <a class="btn" href="/prompts">Prompts</a>
 </div>
 

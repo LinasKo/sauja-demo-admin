@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { env } from "$env/dynamic/public";
   import {
     ENDPOINT_ADMIN_PROMPT,
     ENDPOINT_ADMIN_PROMPT_GET_SELECTED,
@@ -8,43 +7,11 @@
     ENDPOINT_ADMIN_PROMPT_SET_SELECTED,
     ENDPOINT_ADMIN_PROMPT_UPDATE,
   } from "$lib/endpoints";
+  import { fetchGetJson, fetchGetText, fetchPost } from "$lib/requests";
   import { st_selectedPromptId } from "$lib/stores";
   import { onMount } from "svelte";
 
   // Fetch
-  async function fetchGetJson(url: string): Promise<any> {
-    const resp = await fetch(url, {
-      method: "GET",
-      headers: {
-        "x-api-key": env.PUBLIC_DEV_KEY,
-      },
-    });
-    const data = await resp.json();
-    return data;
-  }
-
-  async function fetchGetText(url: string): Promise<string> {
-    const resp = await fetch(url, {
-      method: "GET",
-      headers: {
-        "x-api-key": env.PUBLIC_DEV_KEY,
-      },
-    });
-    const data = await resp.text();
-    return data;
-  }
-
-  async function fetchPost(url: string, body: any): Promise<void> {
-    await fetch(url, {
-      method: "POST",
-      headers: {
-        "x-api-key": env.PUBLIC_DEV_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-  }
-
   async function fetchPromptIds(): Promise<string[]> {
     const url = ENDPOINT_ADMIN_PROMPT_IDS;
     return await fetchGetJson(url);
