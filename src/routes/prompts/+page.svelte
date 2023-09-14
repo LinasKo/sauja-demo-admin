@@ -182,6 +182,17 @@
       }
     }
   }
+
+  // UI Elements
+  function promptButtonClass(promptId: string): string {
+    let classes = "btn";
+    if (promptId === $st_selectedPromptId) {
+      classes += " bg-lime-400";
+    } else if (promptId === current?.id) {
+      classes += " bg-lime-200 hover:bg-lime-300";
+    }
+    return classes;
+  }
 </script>
 
 {#key $st_selectedPromptId}
@@ -203,9 +214,7 @@
         {#key $st_selectedPromptId}
           {#each promptIds as promptId}
             <button
-              class={`btn ${
-                $st_selectedPromptId === promptId && "bg-lime-400"
-              }`}
+              class={promptButtonClass(promptId)}
               on:click={() => onClickPrompt(promptId)}
             >
               {promptId}
