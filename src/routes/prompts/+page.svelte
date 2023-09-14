@@ -71,7 +71,7 @@
   });
 
   // UI Events
-  function onChangeTextarea(e: Event) {
+  function onChangeIdInput(e: Event) {
     if (!current) {
       current = {
         id: "",
@@ -80,6 +80,17 @@
     }
     const elem = e.target as HTMLInputElement;
     current.id = elem.value;
+  }
+
+  function onChangeTextarea(e: Event) {
+    if (!current) {
+      current = {
+        id: "",
+        prompt: "",
+      };
+    }
+    const elem = e.target as HTMLInputElement;
+    current.prompt = elem.value;
   }
 
   function onClickNewPrompt() {
@@ -201,7 +212,7 @@
             disabled={!makingNewPrompt}
             class="p-2 disabled:bg-slate-300 rounded enabled:bg-lime-200"
             placeholder="no-id-so-far"
-            on:change={onChangeTextarea}
+            on:change={onChangeIdInput}
           />
 
           {#if !makingNewPrompt}
