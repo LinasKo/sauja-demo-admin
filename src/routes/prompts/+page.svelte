@@ -253,10 +253,8 @@
           id="prompt-text"
           class="p-2 mt-2 border-2 rounded min-w-[50vw] min-h-[60vh]"
           placeholder="<no prompt text>"
-          on:change={onChangeTextarea}
+          on:change={onChangeTextarea}>{current?.prompt || ""}</textarea
         >
-          {current?.prompt || ""}
-        </textarea>
 
         <button class="btn bg-lime-400" on:click={onClickCreateUpdatePrompt}>
           {makingNewPrompt ? "Create" : "Update"}
