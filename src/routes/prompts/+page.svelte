@@ -52,7 +52,7 @@
 
   async function fetchPrompt(promptId: string): Promise<string> {
     const url = ENDPOINT_ADMIN_PROMPT(promptId);
-    return await fetchGetJson(url);
+    return await fetchGetText(url);
   }
 
   async function insertPrompt(promptId: string, prompt: string): Promise<void> {
