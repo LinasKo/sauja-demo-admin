@@ -54,13 +54,14 @@
       switch (msg.author) {
         case Author.SYSTEM:
           tokenCount.sys += msgTokenCount;
-          tokenCountSoFar += msgTokenCount;
           break;
         case Author.AGENT:
           tokenCount.agent += msgTokenCount;
-          tokenCount.input += tokenCountSoFar;
+
+          const input = tokenCountSoFar - msgTokenCount;
+          tokenCount.input += input;
           tokenCount.output += msgTokenCount;
-          tokenCount.maxInputLength = tokenCountSoFar;
+          tokenCount.maxInputLength = input;
           break;
         case Author.USER:
           tokenCount.user += msgTokenCount;
@@ -90,8 +91,7 @@
     msgs = await fetchMessages(chatId);
 
     // Substitute in secret prompt
-    let promptText = "";
-    promptText = $st_prompts[chat.promptId] || "";
+    const promptText = $st_prompts[chat.promptId] || "";
     if (!promptText) {
       console.warn(`No prompt text for chat ${chatId}`);
     }
@@ -123,8 +123,12 @@ Cost: ${tokenCost(tokenCount).toFixed(2)}</pre>
 
   <!-- Messages -->
   {#if msgs}
-    {#each msgs as msg}
-      <MsgElem {msg} />
+    {#each msgs as msg, i}
+      {#if i == 0}
+        <MsgElem {msg} promptId={chat.promptId} />
+      {:else}
+        <MsgElem {msg} />
+      {/if}
     {/each}
   {:else}
     <p>Loading...</p>

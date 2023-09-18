@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { TEMPLATE_QUESTIONS } from "$lib/constants";
   import { Author, type Message } from "$lib/types";
   export let msg: Message;
+  export let promptId: string = "";
 
   let authorColor: string;
   switch (msg.author) {
@@ -14,12 +16,30 @@
       authorColor = "bg-green-500";
       break;
   }
+
+  const msgTemplate = TEMPLATE_QUESTIONS.indexOf(msg.content);
 </script>
 
 <div class="flex flex-col justify-start items-start p-4">
-  <!-- Author badge -->
-  <div class={`capitalize ${authorColor} rounded font-bold p-1 mb-1 text-lg`}>
-    {msg.author}
+  <div class="flex flex-row gap-2 items-center">
+    <!-- Author badge -->
+    <div class={`capitalize ${authorColor} rounded font-bold p-1 mb-1 text-lg`}>
+      {msg.author}
+    </div>
+
+    {#if msgTemplate > -1}
+      <!-- Template badge -->
+      <div class="bg-yellow-500 rounded font-bold p-1 mb-1 text-lg">
+        Template {msgTemplate}
+      </div>
+    {/if}
+
+    <!-- PromptId -->
+    {#if promptId}
+      <div class="text-sm mb-1">
+        prompt: <span class="font-bold">{promptId}</span>
+      </div>
+    {/if}
   </div>
 
   <pre
