@@ -18,6 +18,7 @@
     sys: number;
     agent: number;
     user: number;
+    maxInputLength: number;
     input: number;
     output: number;
   }
@@ -27,6 +28,7 @@
     sys: 0,
     agent: 0,
     user: 0,
+    maxInputLength: 0,
     input: 0,
     output: 0,
   };
@@ -37,6 +39,7 @@
       sys: 0,
       agent: 0,
       user: 0,
+      maxInputLength: 0,
       input: 0,
       output: 0,
     };
@@ -57,6 +60,7 @@
           tokenCount.agent += msgTokenCount;
           tokenCount.input += tokenCountSoFar;
           tokenCount.output += msgTokenCount;
+          tokenCount.maxInputLength = tokenCountSoFar;
           break;
         case Author.USER:
           tokenCount.user += msgTokenCount;
@@ -104,15 +108,16 @@
     <h1 class="text-lg mb-1">Chat <span class="font-bold">{chatId}</span></h1>
     <div class="flex flex-row">
       <pre class="text-xs rounded bg-gray-300 p-2">Tokens:
-System: {tokenCount.sys}
-Agent: {tokenCount.agent}
-User: {tokenCount.user}
----
-Input: {tokenCount.input}
-Output: {tokenCount.output}</pre>
-      <pre class="text-xs rounded bg-gray-300 p-2 ml-2">Cost: ${tokenCost(
-          tokenCount
-        ).toFixed(2)}</pre>
+ System: {tokenCount.sys}
+ Agent: {tokenCount.agent}
+ User: {tokenCount.user}
+ ---
+ Max Input: {tokenCount.maxInputLength}
+ ---
+ Input: {tokenCount.input}
+ Output: {tokenCount.output}
+
+Cost: ${tokenCost(tokenCount).toFixed(2)}</pre>
     </div>
   </div>
 
