@@ -1,35 +1,46 @@
 <script lang="ts">
-  import { ENDPOINT_ADMIN_CHATS } from "$lib/endpoints";
-  import { fetchGetJson } from "$lib/requests";
-  import { st_showDev } from "$lib/stores";
+  import { fetchChats, fetchPrompt } from "$lib/requests";
+  import { st_chats, st_prompts, st_showDev } from "$lib/stores";
   import type { Chat } from "$lib/types";
   import { onMount } from "svelte";
   import ChatElem from "../ChatElem.svelte";
 
-  async function getChats(): Promise<Chat[]> {
-    return await fetchGetJson(ENDPOINT_ADMIN_CHATS);
-  }
-
-  function groupChatsByDay(convos: Chat[]): Record<string, Chat[]> {
-    return convos.reduce<Record<string, Chat[]>>((acc, convo) => {
-      const day = convo.timeCreated.split("T")[0];
+  function groupChatsByDay(chats: Chat[]): Record<string, Chat[]> {
+    return chats.reduce<Record<string, Chat[]>>((acc, chat) => {
+      const day = chat.timeCreated.split("T")[0];
       if (!acc[day]) {
         acc[day] = [];
       }
-      acc[day].push(convo);
+      acc[day].push(chat);
       return acc;
     }, {});
   }
 
-  let convoGroups: Record<string, Chat[]>;
-  $: convoGroups = {};
+  let chatGroups: Record<string, Chat[]>;
+  $: chatGroups = {};
   onMount(async () => {
-    const convos = await getChats();
-    convoGroups = groupChatsByDay(convos);
+    const chats = await fetchChats();
+    for (const chat of chats) {
+      $st_chats[chat.id] = chat;
+    }
+    $st_chats = $st_chats;
+
+    chatGroups = groupChatsByDay(chats);
+
+    // Fetch used prompts for token calc
+    const promptIds = new Set<string>();
+    chats.forEach((chat) => {
+      promptIds.add(chat.promptId);
+    });
+    promptIds.forEach(async (promptId) => {
+      const promptText = await fetchPrompt(promptId);
+      $st_prompts[promptId] = promptText;
+      $st_prompts = $st_prompts;
+    });
   });
 
-  function groupSortOrder(convoGroups: Record<string, Chat[]>) {
-    return Object.keys(convoGroups).sort((a, b) => {
+  function groupSortOrder(chatGroups: Record<string, Chat[]>) {
+    return Object.keys(chatGroups).sort((a, b) => {
       return new Date(b).getTime() - new Date(a).getTime();
     });
   }
@@ -45,7 +56,7 @@
 <div class="p-10">
   <h1 class="text-lg font-bold">Recorded chats:</h1>
   <div class="">
-    {#if Object.keys(convoGroups).length == 0}
+    {#if Object.keys(chatGroups).length == 0}
       <p>Loading...</p>
     {:else}
       <!-- Inputs -->
@@ -62,7 +73,7 @@
 
       <!-- Chats -->
       <ul class="flex flex-col gap-1 mt-4">
-        {#each groupSortOrder(convoGroups) as dayStr}
+        {#each groupSortOrder(chatGroups) as dayStr}
           <div class="text-sm font-bold mt-4">
             {dayStr === dayStringToday
               ? "Today"
@@ -70,8 +81,8 @@
               ? "Yesterday"
               : dayStr}
           </div>
-          {#each convoGroups[dayStr] as convo}
-            <ChatElem {convo} />
+          {#each chatGroups[dayStr] as chat}
+            <ChatElem {chat} />
           {/each}
         {/each}
       </ul>

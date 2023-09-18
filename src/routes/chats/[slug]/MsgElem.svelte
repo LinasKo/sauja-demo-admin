@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Author, type Message } from "$lib/types";
-
   export let msg: Message;
 
   let authorColor: string;

@@ -1,49 +1,14 @@
 <script lang="ts">
   import {
-    ENDPOINT_ADMIN_PROMPT,
-    ENDPOINT_ADMIN_PROMPT_GET_SELECTED,
-    ENDPOINT_ADMIN_PROMPT_IDS,
-    ENDPOINT_ADMIN_PROMPT_NEW,
-    ENDPOINT_ADMIN_PROMPT_SET_SELECTED,
-    ENDPOINT_ADMIN_PROMPT_UPDATE,
-  } from "$lib/endpoints";
-  import { fetchGetJson, fetchGetText, fetchPost } from "$lib/requests";
+    fetchPrompt,
+    fetchPromptIds,
+    fetchSelectedPromptId,
+    insertPrompt,
+    setSelectedPromptId,
+    updatePrompt,
+  } from "$lib/requests";
   import { st_selectedPromptId } from "$lib/stores";
   import { onMount } from "svelte";
-
-  // Fetch
-  async function fetchPromptIds(): Promise<string[]> {
-    const url = ENDPOINT_ADMIN_PROMPT_IDS;
-    return await fetchGetJson(url);
-  }
-
-  async function fetchPrompt(promptId: string): Promise<string> {
-    const url = ENDPOINT_ADMIN_PROMPT(promptId);
-    return await fetchGetText(url);
-  }
-
-  async function insertPrompt(promptId: string, prompt: string): Promise<void> {
-    const url = ENDPOINT_ADMIN_PROMPT_NEW;
-    const body = { prompt, promptId };
-    await fetchPost(url, body);
-  }
-
-  async function updatePrompt(promptId: string, prompt: string): Promise<void> {
-    const url = ENDPOINT_ADMIN_PROMPT_UPDATE;
-    const body = { prompt, promptId };
-    await fetchPost(url, body);
-  }
-
-  async function fetchSelectedPromptId(): Promise<string> {
-    const url = ENDPOINT_ADMIN_PROMPT_GET_SELECTED;
-    return await fetchGetText(url);
-  }
-
-  async function setSelectedPromptId(promptId: string): Promise<void> {
-    const url = ENDPOINT_ADMIN_PROMPT_SET_SELECTED;
-    const body = { promptId };
-    await fetchPost(url, body);
-  }
 
   // Main
   let promptIds: string[];
