@@ -11,7 +11,7 @@ import {
   ENDPOINT_ADMIN_PROMPT_UPDATE,
 } from "./endpoints";
 import { st_authKey } from "./stores";
-import type { Chat, Message } from "./types";
+import type { Chat, Message, Prompt } from "./types";
 
 // General
 
@@ -57,26 +57,31 @@ export async function fetchPromptIds(): Promise<string[]> {
   return await fetchGetJson(url);
 }
 
-export async function fetchPrompt(promptId: string): Promise<string> {
+export async function fetchPrompt(promptId: string): Promise<Prompt> {
   const url = ENDPOINT_ADMIN_PROMPT(promptId);
-  return await fetchGetText(url);
+  const prompt = await fetchGetJson(url);
+
+  prompt.createdAt = new Date(prompt.createdAt);
+  prompt.updatedAt = new Date(prompt.updatedAt);
+
+  return prompt;
 }
 
 export async function insertPrompt(
   promptId: string,
-  prompt: string
+  promptText: string
 ): Promise<void> {
   const url = ENDPOINT_ADMIN_PROMPT_NEW;
-  const body = { prompt, promptId };
+  const body = { prompt: promptText, promptId };
   await fetchPost(url, body);
 }
 
 export async function updatePrompt(
   promptId: string,
-  prompt: string
+  promptText: string
 ): Promise<void> {
   const url = ENDPOINT_ADMIN_PROMPT_UPDATE;
-  const body = { prompt, promptId };
+  const body = { prompt: promptText, promptId };
   await fetchPost(url, body);
 }
 

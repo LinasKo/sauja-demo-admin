@@ -27,3 +27,11 @@ export type Message = {
   author: Author;
   timeCreated: string;
 };
+
+export type Prompt = {
+  id: string;
+  text: string;
+  model: string;
+  createdAt: Date;
+  updatedAt: Date;
+};

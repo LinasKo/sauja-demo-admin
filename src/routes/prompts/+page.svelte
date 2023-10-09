@@ -27,10 +27,10 @@
     promptIds = await fetchPromptIds();
     $st_selectedPromptId = await fetchSelectedPromptId();
     if ($st_selectedPromptId) {
-      const promptText = await fetchPrompt($st_selectedPromptId);
+      const prompt = await fetchPrompt($st_selectedPromptId);
       current = {
         id: $st_selectedPromptId,
-        prompt: promptText,
+        prompt: prompt.text,
       };
     }
   });
@@ -65,10 +65,10 @@
 
   async function onClickPrompt(promptId: string) {
     makingNewPrompt = false;
-    const promptText = await fetchPrompt(promptId);
+    const prompt = await fetchPrompt(promptId);
     current = {
       id: promptId,
-      prompt: promptText,
+      prompt: prompt.text,
     };
   }
 
@@ -81,10 +81,10 @@
     promptIds = await fetchPromptIds(); // Won't hurt
     const selectedId = await fetchSelectedPromptId();
     if (selectedId) {
-      const promptText = await fetchPrompt(selectedId);
+      const prompt = await fetchPrompt(selectedId);
       current = {
         id: selectedId,
-        prompt: promptText,
+        prompt: prompt.text,
       };
     }
     $st_selectedPromptId = selectedId;
@@ -104,8 +104,8 @@
       try {
         await insertPrompt(current.id, current.prompt);
         promptIds = await fetchPromptIds(); // Won't hurt
-        const promptText = await fetchPrompt(current.id);
-        current.prompt = promptText;
+        const prompt = await fetchPrompt(current.id);
+        current.prompt = prompt.text;
         makingNewPrompt = false;
         alert("Created prompt");
       } catch (e) {
@@ -116,8 +116,8 @@
       try {
         await updatePrompt(current.id, current.prompt);
         promptIds = await fetchPromptIds(); // Won't hurt
-        const promptText = await fetchPrompt(current.id);
-        current.prompt = promptText;
+        const prompt = await fetchPrompt(current.id);
+        current.prompt = prompt.text;
         alert("Updated prompt");
       } catch (e) {
         alert("Failed to update prompt: " + e);

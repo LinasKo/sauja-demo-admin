@@ -33,8 +33,8 @@
       promptIds.add(chat.promptId);
     });
     promptIds.forEach(async (promptId) => {
-      const promptText = await fetchPrompt(promptId);
-      $st_prompts[promptId] = promptText;
+      const prompt = await fetchPrompt(promptId);
+      $st_prompts[promptId] = prompt.text;
       $st_prompts = $st_prompts;
     });
   });
