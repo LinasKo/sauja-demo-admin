@@ -7,7 +7,7 @@
 
   function groupChatsByDay(chats: Chat[]): Record<string, Chat[]> {
     return chats.reduce<Record<string, Chat[]>>((acc, chat) => {
-      const day = chat.createdAt.split("T")[0];
+      const day = chat.createdAt.split(" ")[0];
       if (!acc[day]) {
         acc[day] = [];
       }
