@@ -4,7 +4,7 @@
 
   export let chat: Chat;
 
-  let tagText = chat.origin;
+  let tagText = chat.userType;
   let tagColor = "bg-red-500";
 
   switch (chat.userType) {
@@ -21,7 +21,7 @@
       tagColor = "bg-green-500";
       break;
     case UserType.UNKNOWN:
-      tagText = `??? ${chat.origin}`;
+      tagText = `??? ${chat.userType}`;
       tagColor = "bg-red-500";
       break;
   }

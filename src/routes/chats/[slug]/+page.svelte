@@ -1,8 +1,7 @@
 <script lang="ts">
   import { fetchMessages } from "$lib/requests";
   import { st_chats, st_prompts } from "$lib/stores";
-  import { Author, type Message } from "$lib/types";
-  import { encoding_for_model } from "@dqbd/tiktoken";
+  import { MessageType, type Message } from "$lib/types";
   import { onMount } from "svelte";
   import type { PageData } from "./$types";
   import MsgElem from "./MsgElem.svelte";
@@ -10,95 +9,80 @@
   export let data: PageData;
   const chatId = data.slug;
   const chat = $st_chats[chatId];
+  const promptText = $st_prompts[chat.promptId] || "";
+  if (!promptText) {
+    console.warn(`No prompt text for chat ${chatId}`);
+  }
 
   let msgs: Message[];
   $: msgs = [];
 
-  interface TokenCount {
-    sys: number;
+  interface TokenTally {
     agent: number;
     user: number;
-    maxInputLength: number;
     input: number;
     output: number;
+    costUsd: number;
   }
 
-  let tokenCount: TokenCount;
-  $: tokenCount = {
-    sys: 0,
+  let tokenTally: TokenTally;
+  $: tokenTally = {
     agent: 0,
     user: 0,
-    maxInputLength: 0,
     input: 0,
     output: 0,
+    costUsd: 0,
   };
 
-  /** Relies on stores, but otherwise independent */
-  function computeTokens(messages: Message[]): TokenCount {
-    const tokenCount: TokenCount = {
-      sys: 0,
-      agent: 0,
-      user: 0,
-      maxInputLength: 0,
-      input: 0,
-      output: 0,
+  function tokenCost(message: Message): number {
+    // Hardcoded for models
+    const COST_PER_TOKEN = {
+      "gpt-4": {
+        input: 0.001 * 0.03,
+        output: 0.001 * 0.06,
+      },
+      "gpt-3.5-turbo": {
+        input: 0.001 * 0.0015,
+        output: 0.001 * 0.002,
+      },
     };
 
-    const encoding = encoding_for_model("gpt-4");
+    let costs = COST_PER_TOKEN["gpt-4"];
+    if (message.type == MessageType.SUMMARIZER) {
+      costs = COST_PER_TOKEN["gpt-3.5-turbo"];
+    }
 
-    let tokenCountSoFar = 0;
-    messages.forEach((msg) => {
-      const msgTokenCount = encoding.encode(msg.content).length;
-      tokenCountSoFar += msgTokenCount;
-
-      switch (msg.author) {
-        case Author.SYSTEM:
-          tokenCount.sys += msgTokenCount;
-          break;
-        case Author.AGENT:
-          tokenCount.agent += msgTokenCount;
-
-          const input = tokenCountSoFar - msgTokenCount;
-          tokenCount.input += input;
-          tokenCount.output += msgTokenCount;
-          tokenCount.maxInputLength = input;
-          break;
-        case Author.USER:
-          tokenCount.user += msgTokenCount;
-          break;
-        default:
-          console.warn(`Unknown author ${msg.author}`);
-          break;
-      }
-    });
-    encoding.free();
-
-    // TODO: does not account for cases where chat is ended by non-agent (e.g. terminated by user before agent starts responding)
-
-    return tokenCount;
-  }
-
-  function tokenCost(tokenCount: TokenCount): number {
-    const USD_PER_INPUT_TOKEN = 0.001 * 0.03;
-    const USD_PER_OUTPUT_TOKEN = 0.001 * 0.06;
     return (
-      tokenCount.input * USD_PER_INPUT_TOKEN +
-      tokenCount.output * USD_PER_OUTPUT_TOKEN
+      message.tokenInputUsed * costs.input +
+      message.tokenOutputUsed * costs.output
     );
   }
 
   onMount(async () => {
     msgs = await fetchMessages(chatId);
 
-    // Substitute in secret prompt
-    const promptText = $st_prompts[chat.promptId] || "";
-    if (!promptText) {
-      console.warn(`No prompt text for chat ${chatId}`);
-    }
-    msgs[0].content = promptText;
+    // Tally-up tokens
+    for (const msg of msgs) {
+      const cost = tokenCost(msg);
+      if (msg.type === MessageType.USER) {
+        tokenTally.user += msg.tokenInputUsed;
+      } else {
+        tokenTally.agent += msg.tokenInputUsed;
+      }
 
-    // Count tokens
-    tokenCount = computeTokens(msgs);
+      // Note: different models are conflated here
+      tokenTally.input += msg.tokenInputUsed;
+      tokenTally.output += msg.tokenOutputUsed;
+
+      tokenTally.costUsd += cost;
+    }
+
+    // TODO: show prompt text
+
+    // const promptText = $st_prompts[chat.promptId] || "";
+    // if (!promptText) {
+    // console.warn(`No prompt text for chat ${chatId}`);
+    // }
   });
 </script>
 
@@ -108,16 +92,13 @@
     <h1 class="text-lg mb-1">Chat <span class="font-bold">{chatId}</span></h1>
     <div class="flex flex-row">
       <pre class="text-xs rounded bg-gray-300 p-2">Tokens:
- System: {tokenCount.sys}
- Agent: {tokenCount.agent}
- User: {tokenCount.user}
+ Agent: {tokenTally.agent}
+ User: {tokenTally.user}
  ---
- Max Input: {tokenCount.maxInputLength}
- ---
- Input: {tokenCount.input}
- Output: {tokenCount.output}
+ Input: {tokenTally.input}
+ Output: {tokenTally.output}
 
-Cost: ${tokenCost(tokenCount).toFixed(2)}</pre>
+Cost: ${tokenTally.costUsd.toFixed(2)}</pre>
     </div>
   </div>
 

@@ -24,6 +24,7 @@ async function fetchGetJson(url: string): Promise<any> {
     },
   });
   const data = await resp.json();
+  console.log(data);
   return data;
 }
 

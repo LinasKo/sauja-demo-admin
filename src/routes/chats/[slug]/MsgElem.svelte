@@ -1,19 +1,28 @@
 <script lang="ts">
   import { TEMPLATE_QUESTIONS } from "$lib/constants";
-  import { Author, type Message } from "$lib/types";
+  import { MessageType, type Message } from "$lib/types";
   export let msg: Message;
   export let promptId: string = "";
 
   let authorColor: string;
-  switch (msg.author) {
-    case Author.SYSTEM:
-      authorColor = "bg-blue-500";
+  switch (msg.type) {
+    case MessageType.USER:
+      authorColor = "bg-green-500";
       break;
-    case Author.AGENT:
+    case MessageType.AGENT:
       authorColor = "bg-purple-500";
       break;
-    case Author.USER:
-      authorColor = "bg-green-500";
+    case MessageType.SUMMARIZER:
+      authorColor = "bg-purple-500";
+      break;
+    case MessageType.INTERRUPTED:
+      authorColor = "bg-gray-500";
+      break;
+    case MessageType.MEMORY:
+      authorColor = "bg-blue-500";
+      break;
+    case MessageType.CART_STATUS:
+      authorColor = "bg-yellow-500";
       break;
   }
 
@@ -24,7 +33,7 @@
   <div class="flex flex-row gap-2 items-center">
     <!-- Author badge -->
     <div class={`capitalize ${authorColor} rounded font-bold p-1 mb-1 text-lg`}>
-      {msg.author}
+      {msg.type}
     </div>
 
     {#if msgTemplate > -1}
