@@ -9,7 +9,7 @@
   export let data: PageData;
   const chatId = data.slug;
   const chat = $st_chats[chatId];
-  const promptText = $st_prompts[chat.promptId] || "";
+  const promptText = $st_prompts[chat.promptId] || "";  // Undefined?
   if (!promptText) {
     console.warn(`No prompt text for chat ${chatId}`);
   }
