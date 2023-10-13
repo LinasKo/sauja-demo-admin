@@ -21,6 +21,10 @@
       tagColor = "bg-green-500";
       break;
     case UserType.UNKNOWN:
+      tagText = `unknown`;
+      tagColor = "bg-gray-500";
+      break;
+    default:
       tagText = `??? ${chat.userType}`;
       tagColor = "bg-red-500";
       break;
@@ -37,7 +41,7 @@
 
     <!-- Link -->
     <a href={`/chats/${chat.id}`}>
-      {chat.id}
+      {chat.id.slice(0, 13)}
     </a>
   </li>
 {/if}
